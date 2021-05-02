@@ -13,6 +13,7 @@ enum noo_event {
 };
 
 enum mgos_app_init_result mgos_mongoose_os_noolite_init(void);
+bool noo_init_mqtt();
 
 bool noo_write(mtrf_msg pkt);
 
