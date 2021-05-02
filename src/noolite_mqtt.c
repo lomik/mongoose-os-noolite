@@ -2,6 +2,8 @@
 #include "noolite.h"
 #include "mgos_mqtt.h"
 
+struct mg_str NOO_MQTT_TOPIC;
+
 int noo_mqtt_mg_str_atoi(struct mg_str s) {
     int res = 0;
     for (int i=0; i<s.len; i++) {
@@ -50,8 +52,8 @@ static void noo_mqtt_sent_cb(int ev, void *ev_data, void *userdata) {
     mtrf_msg* pkt = (mtrf_msg*)ev_data;
 
     char topic[100];
-    snprintf(topic, sizeof(topic), "%s/sent/raw",
-           NOO_MQTT_TOPIC);
+    snprintf(topic, sizeof(topic), "%.*s/sent/raw",
+           NOO_MQTT_TOPIC.len, NOO_MQTT_TOPIC.p);
     mgos_mqtt_pubf(topic, 0, false /* retain */,
         "[%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d]",
         pkt->st, pkt->mode, pkt->ctr, pkt->res, pkt->ch, pkt->cmd, pkt->fmt, 
@@ -66,8 +68,8 @@ static void noo_mqtt_recv_cb(int ev, void *ev_data, void *userdata) {
     mtrf_msg* pkt = (mtrf_msg*)ev_data;
 
     char topic[100];
-    snprintf(topic, sizeof(topic), "%s/recv/raw",
-           NOO_MQTT_TOPIC);
+    snprintf(topic, sizeof(topic), "%.*s/recv/raw",
+           NOO_MQTT_TOPIC.len, NOO_MQTT_TOPIC.p);
     mgos_mqtt_pubf(topic, 0, false /* retain */,
         "[%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d]",
         pkt->st, pkt->mode, pkt->ctr, pkt->res, pkt->ch, pkt->cmd, pkt->fmt, 
@@ -84,7 +86,7 @@ static void noo_mqtt_write_cb(struct mg_connection *nc, const char *ev_topic,
     LOG(LL_INFO, ("[noolite] mqtt recv topic=%s msg=%s", ev_topic, ev_msg));
 
     // skip NOO_MQTT_TOPIC+"/write/"
-    struct mg_str topic = mg_mk_str_n(ev_topic+strlen(NOO_MQTT_TOPIC)+7, ev_topic_len-strlen(NOO_MQTT_TOPIC)-7);
+    struct mg_str topic = mg_mk_str_n(ev_topic+NOO_MQTT_TOPIC.len+7, ev_topic_len-NOO_MQTT_TOPIC.len-7);
     struct mg_str msg = mg_mk_str_n(ev_msg, ev_msg_len);
 
     struct mg_str p1 = MG_NULL_STR;
@@ -196,11 +198,17 @@ run:
 
 
 bool noo_init_mqtt() {
+    if (strcmp(mgos_sys_config_get_noolite_mqtt_topic(), "") == 0) {
+        return false;
+    }
+
+    NOO_MQTT_TOPIC = mg_mk_str(mgos_sys_config_get_noolite_mqtt_topic());
+
     mgos_event_add_handler(NOO_EVENT_SENT, noo_mqtt_sent_cb, NULL);
     mgos_event_add_handler(NOO_EVENT_RECV, noo_mqtt_recv_cb, NULL);
 
     char topic[100];
-    snprintf(topic, sizeof(topic), "%s/write/#", NOO_MQTT_TOPIC);
+    snprintf(topic, sizeof(topic), "%.*s/write/#", NOO_MQTT_TOPIC.len, NOO_MQTT_TOPIC.p);
     mgos_mqtt_sub(topic, noo_mqtt_write_cb, NULL);
     return true;
 }

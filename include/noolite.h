@@ -5,8 +5,6 @@
 
 #define NOO_EVENT_BASE MGOS_EVENT_BASE('N', 'O', 'O')
 
-#define NOO_MQTT_TOPIC "noo2"
-
 enum noo_event {
   NOO_EVENT_RECV = NOO_EVENT_BASE,
   NOO_EVENT_SENT,
