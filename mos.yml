@@ -1,0 +1,26 @@
+author: lomik
+description: Mongoose OS nooLite MTRF-64 library
+version: 0.1
+libs_version: ${mos.version}
+modules_version: ${mos.version}
+mongoose_os_version: ${mos.version}
+
+config_schema:
+  - ["noolite", "o", {title: "nooLite settings"}]
+  - ["noolite.enable", "b", true, {title: "Activate nooLite client"}]
+  - ["noolite.mqtt_topic", "s", "", {title: "MQTT root"}]
+
+sources:
+  - src
+
+includes:
+  - include
+
+tags:
+  - c
+
+libs:
+  - origin: https://github.com/mongoose-os-libs/vfs-common
+  - origin: https://github.com/mongoose-os-libs/core
+
+manifest_version: 2018-09-24
