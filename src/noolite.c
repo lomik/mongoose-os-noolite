@@ -92,7 +92,6 @@ bool noo_init_uart() {
 
 
 bool mgos_mongoose_os_noolite_init(void) {
-    return true;
     if (!mgos_sys_config_get_noolite_enable()) {
         return true;
     }
