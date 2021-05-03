@@ -91,16 +91,17 @@ bool noo_init_uart() {
 
 
 
-enum mgos_app_init_result mgos_mongoose_os_noolite_init(void) {
+bool mgos_mongoose_os_noolite_init(void) {
+    return true;
     if (!mgos_sys_config_get_noolite_enable()) {
-        return MGOS_APP_INIT_SUCCESS;
+        return true;
     }
 
     mgos_event_register_base(NOO_EVENT_BASE, "noolite module");
     noo_init_uart();
     noo_init_mqtt();
 
-    return MGOS_APP_INIT_SUCCESS;
+    return true;
 }
 
 /* HELPER COMMANDS */
