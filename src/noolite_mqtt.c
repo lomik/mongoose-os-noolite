@@ -171,7 +171,11 @@ cmd_tx:
         goto run;
     }
     if (mg_strcmp(p3, mg_mk_str("bind"))==0) {
-        pkt.cmd = MTRF_CMD_BIND;
+        if (pkt.mode == MTRF_MODE_RX) {}
+            pkt.ctr = MTRF_CTR_BIND_ON;
+        } else {
+            pkt.cmd = MTRF_CMD_BIND;
+        }
         goto run;
     }
     if (mg_strcmp(p3, mg_mk_str("unbind"))==0) {
