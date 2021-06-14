@@ -171,11 +171,7 @@ cmd_tx:
         goto run;
     }
     if (mg_strcmp(p3, mg_mk_str("bind"))==0) {
-        if (pkt.mode == MTRF_MODE_RX) {}
-            pkt.ctr = MTRF_CTR_BIND_ON;
-        } else {
-            pkt.cmd = MTRF_CMD_BIND;
-        }
+        pkt.cmd = MTRF_CMD_BIND;
         goto run;
     }
     if (mg_strcmp(p3, mg_mk_str("unbind"))==0) {
@@ -188,7 +184,7 @@ cmd_tx:
 
 cmd_rx:
     if (mg_strcmp(p3, mg_mk_str("bind"))==0) {
-        pkt.cmd = MTRF_CMD_BIND;
+        pkt.ctr = MTRF_CTR_BIND_ON;
         goto run;
     }
 
