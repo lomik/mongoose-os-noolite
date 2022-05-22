@@ -74,6 +74,49 @@ static void noo_mqtt_recv_cb(int ev, void *ev_data, void *userdata) {
         "[%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d]",
         pkt->st, pkt->mode, pkt->ctr, pkt->res, pkt->ch, pkt->cmd, pkt->fmt, 
         pkt->d0, pkt->d1, pkt->d2, pkt->d3, pkt->id0, pkt->id1, pkt->id2, pkt->id3, pkt->crc, pkt->sp);
+
+    char mode[10];
+    char sub_topic[32];
+    char payload[32];
+
+    payload[0] = 0x0; // empty string by default
+
+    switch(pkt->mode) {
+        case MTRF_MODE_RX:
+            sprintf(mode, "rx");
+        case MTRF_MODE_RXF:
+            sprintf(mode, "rxf");
+        case MTRF_MODE_TX:
+            sprintf(mode, "tx");
+        case MTRF_MODE_TXF:
+            sprintf(mode, "txf");
+        default:
+            return;
+    }
+
+    switch(pkt->cmd) {
+        case MTRF_CMD_ON:
+            sprintf(sub_topic, "power");
+            sprintf(payload, "on");
+        case MTRF_CMD_OFF:
+            sprintf(sub_topic, "power");
+            sprintf(payload, "off");
+        case MTRF_CMD_SWITCH:
+            sprintf(sub_topic, "switch");
+        case MTRF_CMD_BRIGHT_BACK:
+            sprintf(sub_topic, "bright_back");
+        case MTRF_CMD_STOP_REG:
+            sprintf(sub_topic, "stop_reg");
+        default:
+            return;
+    }
+
+    snprintf(topic, sizeof(topic), "%.*s/recv/%s/%d/%s",
+           NOO_MQTT_TOPIC.len, NOO_MQTT_TOPIC.p, mode, pkt->ch, sub_topic);
+
+    mgos_mqtt_pub(topic, payload, strlen(payload), 0, false);
+
+
     (void) ev;
     (void) ev_data;
     (void) userdata;
