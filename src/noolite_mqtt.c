@@ -84,12 +84,16 @@ static void noo_mqtt_recv_cb(int ev, void *ev_data, void *userdata) {
     switch(pkt->mode) {
         case MTRF_MODE_RX:
             sprintf(mode, "rx");
+            break;
         case MTRF_MODE_RXF:
             sprintf(mode, "rxf");
+            break;
         case MTRF_MODE_TX:
             sprintf(mode, "tx");
+            break;
         case MTRF_MODE_TXF:
             sprintf(mode, "txf");
+            break;
         default:
             return;
     }
@@ -98,15 +102,20 @@ static void noo_mqtt_recv_cb(int ev, void *ev_data, void *userdata) {
         case MTRF_CMD_ON:
             sprintf(sub_topic, "power");
             sprintf(payload, "on");
+            break;
         case MTRF_CMD_OFF:
             sprintf(sub_topic, "power");
             sprintf(payload, "off");
+            break;
         case MTRF_CMD_SWITCH:
             sprintf(sub_topic, "switch");
+            break;
         case MTRF_CMD_BRIGHT_BACK:
             sprintf(sub_topic, "bright_back");
+            break;
         case MTRF_CMD_STOP_REG:
             sprintf(sub_topic, "stop_reg");
+            break;
         default:
             return;
     }
